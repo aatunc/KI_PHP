@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #chatbox { width: 60%; margin: auto; padding: 20px; border: 1px solid #ddd; height: 400px; overflow-y: auto; }
+        #user-input { width: 60%; padding: 10px; margin-top: 10px; }
+        button { padding: 10px; }
+    </style>
+</head>
+<body>
+    <h2>KI-Chatbot</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="user-input" placeholder="Frage mich etwas...">
+    <button onclick="sendMessage()">Senden</button>
+
+    <script>
+        function sendMessage() {
+            let userInput = document.getElementById("user-input").value;
+            let chatbox = document.getElementById("chatbox");
+
+            if (userInput.trim() === "") return;
+
+            chatbox.innerHTML += `<p><b>Du:</b> ${userInput}</p>`;
+            document.getElementById("user-input").value = "";
+
+            fetch("chatbot.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatbox.innerHTML += `<p><b>Bot:</b> ${data.reply}</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            })
+            .catch(error => console.error("Fehler:", error));
+        }
+    </script>
+</body>
+</html>
